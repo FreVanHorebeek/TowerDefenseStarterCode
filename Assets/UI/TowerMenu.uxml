@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/TowerMenu.uss?fileID=7433441132597879392&amp;guid=656d4c26102008345a324dbc561d566a&amp;type=3#TowerMenu" />
+    <ui:Button text="ArcherTower" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ArcherTower" class="Button" />
+    <ui:Button text="SwordTower" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SwordTower" class="Button" />
+    <ui:Button text="WizardTower" parse-escape-sequences="true" display-tooltip-when-elided="true" name="WizardTower" class="Button" />
+    <ui:Button text="Upgrade" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Upgrade" class="Button" />
+    <ui:Button text="Destroy" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Destroy" class="Button" />
+</ui:UXML>
