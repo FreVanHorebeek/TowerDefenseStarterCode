@@ -11,6 +11,18 @@ public class Enemy : MonoBehaviour
     public GameObject target { get; set; }
     private int pathIndex = 1;
 
+    // Methode om schade toe te passen op de vijand
+    public void Damage(float damage)
+    {
+        health -= damage;
+
+        // Controleer of de gezondheid van de vijand nul of kleiner is
+        if (health <= 0)
+        {
+            // Vernietig de vijand
+            Destroy(gameObject);
+        }
+    }
 
     void Update()
     {
@@ -32,3 +44,4 @@ public class Enemy : MonoBehaviour
         }
     }
 }
+

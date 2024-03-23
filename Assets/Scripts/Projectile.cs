@@ -50,8 +50,8 @@ public class Projectile : MonoBehaviour
         // Deal damage to the target
         if (target.GetComponent<Enemy>() != null)
         {
-            target.GetComponent<Enemy>().health -= damage;
-            Debug.Log("Dealt " + damage + " damage to the enemy!");
+            target.GetComponent<Enemy>().Damage(damage);
         }
     }
 }
+

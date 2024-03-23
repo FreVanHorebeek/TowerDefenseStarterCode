@@ -53,27 +53,33 @@ public class towerMenu : MonoBehaviour
 
     private void OnArcherButtonClicked()
     {
-        // Implementeer deze functie indien nodig
+        GameManager.Instance.Build(TowerType.Archer, SiteLevel.Level1);
     }
 
     private void OnSwordButtonClicked()
     {
-        // Implementeer deze functie indien nodig
+        GameManager.Instance.Build(TowerType.Sword, SiteLevel.Level1);
     }
 
     private void OnWizardButtonClicked()
     {
-        // Implementeer deze functie indien nodig
+        GameManager.Instance.Build(TowerType.Wizard, SiteLevel.Level1);
     }
 
     private void OnUpgradeButtonClicked()
     {
-        // Implementeer deze functie indien nodig
+        if (selectedSite == null)
+            return;
+
+        GameManager.Instance.Build(selectedSite.TowerType, selectedSite.Level + 1);
     }
 
     private void OnDestroyButtonClicked()
     {
-        // Implementeer deze functie indien nodig
+        if (selectedSite == null)
+            return;
+
+        GameManager.Instance.Build(selectedSite.TowerType, SiteLevel.Unbuilt);
     }
 
     private void OnDestroy()

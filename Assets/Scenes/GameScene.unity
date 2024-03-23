@@ -123,6 +123,63 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &234794296
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 234794298}
+  - component: {fileID: 234794297}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &234794297
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234794296}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef84e6a8b3a3439478b67b91db3d80ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  towerMenuObject: {fileID: 1328664694}
+  Archers:
+  - {fileID: 3340590372508377554, guid: de908bcee29e4824d8b206e662a98816, type: 3}
+  - {fileID: 4151521688862456836, guid: eb4367c99f84bdb46a02802f3c0a6920, type: 3}
+  - {fileID: 372730760875065134, guid: 02315d51a83bf6f4397151bf886b4748, type: 3}
+  Swords:
+  - {fileID: 8272579684679151175, guid: 616c874f045b820409a28b2e334ecf3a, type: 3}
+  - {fileID: 8125218670175365336, guid: f6ceda4460799d545bac3ebbb7693141, type: 3}
+  - {fileID: 1201408368985141680, guid: 7a13f5f8d9f311b46aea2032e6031ffc, type: 3}
+  Wizards:
+  - {fileID: 2672421521588469263, guid: 50bc61cae84b5454088a1ebd4feb98bf, type: 3}
+  - {fileID: 970977148852842058, guid: 2ac30a548404bc3419ee14b6aa268a6a, type: 3}
+  - {fileID: 2978943028159594794, guid: bbaf87707ee348a47a6e441d6cf4bff3, type: 3}
+--- !u!4 &234794298
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 234794296}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.2869639, y: -0.72492135, z: 0.19620895}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &321964005
 GameObject:
   m_ObjectHideFlags: 0
@@ -973,6 +1030,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1328664695}
   - component: {fileID: 1328664696}
+  - component: {fileID: 1328664697}
   m_Layer: 0
   m_Name: TowerMenu
   m_TagString: Untagged
@@ -1007,6 +1065,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6be6c49503e742a489a9fad5657c616f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1328664697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1328664694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_PanelSettings: {fileID: 11400000, guid: 1dc257219653d8f43b37a9eb35057851, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: 565596f29cedd42448dc80e7e30f23a2, type: 3}
+  m_SortingOrder: 0
 --- !u!1 &1414901881
 GameObject:
   m_ObjectHideFlags: 0
@@ -6043,6 +6117,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: archer_level_1
       objectReference: {fileID: 0}
+    - target: {fileID: 4076101654794328500, guid: de908bcee29e4824d8b206e662a98816, type: 3}
+      propertyPath: attackRate
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4076101654794328500, guid: de908bcee29e4824d8b206e662a98816, type: 3}
+      propertyPath: attackSize
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4076101654794328500, guid: de908bcee29e4824d8b206e662a98816, type: 3}
+      propertyPath: attackRange
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4076101654794328500, guid: de908bcee29e4824d8b206e662a98816, type: 3}
+      propertyPath: attackDamage
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 9121226664161800229, guid: de908bcee29e4824d8b206e662a98816, type: 3}
       propertyPath: m_LocalPosition.x
       value: -4.9
@@ -6098,3 +6188,4 @@ SceneRoots:
   - {fileID: 1694696532}
   - {fileID: 7971851291140598053}
   - {fileID: 1328664695}
+  - {fileID: 234794298}
