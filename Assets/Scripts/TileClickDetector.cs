@@ -3,17 +3,16 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Tilemaps;
 
+
+
 public class TileClickDetector : MonoBehaviour
 {
     public Camera cam; // Assign your main camera here through the Inspector 
     public Tilemap tilemap; // Assign your tilemap here through the Inspector 
-
     public TileBase SelectedTile { get; private set; }
     public Vector3 SelectedPosition { get; private set; }
-
     private List<ConstructionSite> sites = new List<ConstructionSite>();
     public ConstructionSite SelectedSite { get; private set; }
-
     private void Start()
     {
         BoundsInt bounds = tilemap.cellBounds;
@@ -25,6 +24,7 @@ public class TileClickDetector : MonoBehaviour
                 {
                     Vector3Int cellPosition = new Vector3Int(x, y, z);
                     TileBase foundTile = tilemap.GetTile(cellPosition);
+
                     if (foundTile != null && foundTile.name == "buildingPlaceGrass")
                     {
                         sites.Add(new ConstructionSite(cellPosition, tilemap.CellToWorld(cellPosition)));
@@ -33,7 +33,6 @@ public class TileClickDetector : MonoBehaviour
             }
         }
     }
-
     // Update is called once per frame 
     void Update()
     {
@@ -43,7 +42,6 @@ public class TileClickDetector : MonoBehaviour
             DetectTileClicked();
         }
     }
-
     void DetectTileClicked()
     {
         // Convert mouse click position to world space 
@@ -59,9 +57,13 @@ public class TileClickDetector : MonoBehaviour
 
         if (clickedTile != null)
         {
+            // Tile was clicked - you can check specific properties or tile types here 
+
+            // Example: Check for a specific tile (by name, for instance) 
             if (clickedTile.name == "buildingPlaceGrass")
             {
                 SelectedSite = null;
+
                 foreach (var site in sites)
                 {
                     if (cellPosition == site.TilePosition)
@@ -80,8 +82,6 @@ public class TileClickDetector : MonoBehaviour
         {
             SelectedSite = null;
         }
-
         GameManager.Instance.SelectSite(SelectedSite);
     }
-
 }

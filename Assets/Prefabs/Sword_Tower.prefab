@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2064554946372640493}
   - component: {fileID: 560188018350882145}
   m_Layer: 0
-  m_Name: barrack_level_1 (1)
+  m_Name: Sword_Tower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

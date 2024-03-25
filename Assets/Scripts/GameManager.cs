@@ -4,62 +4,64 @@ using static Enums;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance { get; private set; }
+    private static GameManager instance;
 
-    // Referentie naar het TowerMenu gameobject
-    public GameObject towerMenuObject;
-
-    // Variabele om het TowerMenu script bij te houden
-    private towerMenu towerMenu; // Let op: gewijzigd van 'towerMenu' naar 'TowerMenu'
-
-    // Variabelen om de prefab towers in op te slaan
-    public List<GameObject> Archers;
-    public List<GameObject> Swords;
-    public List<GameObject> Wizards;
-
-    // Variabele om de geselecteerde site bij te houden
     private ConstructionSite selectedSite;
+    public GameObject TowerMenu;
+    private TowerMenu towerMenu;
+    public List<GameObject> Archers = new List<GameObject>();
+    public List<GameObject> Swords = new List<GameObject>();
+    public List<GameObject> Wizards = new List<GameObject>();
 
-    // Awake wordt aangeroepen voordat Start wordt aangeroepen
-    private void Awake()
+    public static GameManager Instance
     {
-        // Zorg ervoor dat er slechts één instantie van GameManager is
-        if (Instance == null)
+        get
         {
-            Instance = this;
+            if (instance == null)
+            {
+                instance = FindObjectOfType<GameManager>();
+                if (instance == null)
+                {
+                    GameObject obj = new GameObject("GameManager");
+                    instance = obj.AddComponent<GameManager>();
+                }
+            }
+            return instance;
+        }
+    }
+    public void SelectSite(ConstructionSite site)
+    {
+        // Onthoud de geselecteerde site
+        this.selectedSite = site;
+        // Geef de geselecteerde site door aan het towerMenu door SetSite aan te roepen
+        towerMenu.SetSite(site);
+    }
+    void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
-            Destroy(gameObject); // Vernietig dit object als er al een instantie bestaat
+            Destroy(gameObject);
         }
     }
-
-    // Start is called before the first frame update
     void Start()
     {
-        // Haal het TowerMenu script op van het TowerMenu gameobject
-        towerMenu = towerMenuObject.GetComponent<towerMenu>(); // Let op: gewijzigd van 'towerMenu' naar 'TowerMenu'
+        towerMenu = TowerMenu.GetComponent<TowerMenu>();
     }
-
-    // Functie om een constructiesite te selecteren
-    public void SelectSite(ConstructionSite site)
-    {
-        // Onthoud de geselcteerde site
-        selectedSite = site;
-
-        // Geef de geselecteerde site door aan het TowerMenu
-        towerMenu.SetSite(selectedSite);
-    }
-
-    // Functie om een toren te bouwen op de geselecteerde site
     public void Build(TowerType type, SiteLevel level)
     {
-        // Je kunt niets bouwen als er geen site is geselecteerd
+        // Je kunt niet bouwen als er geen site is geselecteerd
         if (selectedSite == null)
+        {
             return;
+        }
 
-        // Gebruik switch met de TowerType om de juiste lijst te selecteren
-        List<GameObject> towerList;
+        // Selecteer de juiste lijst op basis van het torentype
+        List<GameObject> towerList = null;
         switch (type)
         {
             case TowerType.Archer:
@@ -71,36 +73,19 @@ public class GameManager : MonoBehaviour
             case TowerType.Wizard:
                 towerList = Wizards;
                 break;
-            default:
-                return; // Als er een ongeldig type is, stop dan hier
         }
 
-        // Gebruik switch met het level om een GameObject-toren te maken
-        GameObject towerPrefab = null;
-        switch (level)
-        {
-            case SiteLevel.Unbuilt:
-                return; // Kan geen toren bouwen op een onbebouwde site
-            case SiteLevel.Level1:
-                towerPrefab = towerList[0];
-                break;
-            case SiteLevel.Level2:
-                towerPrefab = towerList[1];
-                break;
-            case SiteLevel.Level3:
-                towerPrefab = towerList[2];
-                break;
-            default:
-                return; // Als er een ongeldig level is, stop dan hier
-        }
+        // Gebruik een switch met het niveau om een GameObject-toren te maken
+        GameObject towerPrefab = towerList[(int)level];
 
-        // Instantieer de geselecteerde toren op de geselecteerde site
-        GameObject newTower = Instantiate(towerPrefab, selectedSite.WorldPosition, Quaternion.identity);
+        // Haal de positie van de ConstructionSite op
+        Vector3 buildPosition = selectedSite.BuildPosition();
+
+        GameObject towerInstance = Instantiate(towerPrefab, buildPosition, Quaternion.identity);
 
         // Configureer de geselecteerde site om de toren in te stellen
-        selectedSite.SetTower(newTower, level, type);
-
-        // Geef null door aan de SetSite-functie in TowerMenu om het menu te verbergen
+        selectedSite.SetTower(towerInstance, level, type); // Voeg level en type toe als
         towerMenu.SetSite(null);
     }
+
 }

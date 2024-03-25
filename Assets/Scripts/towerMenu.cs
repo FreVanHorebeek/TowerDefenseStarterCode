@@ -2,159 +2,266 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using static Enums;
 
-public class towerMenu : MonoBehaviour
+
+public class TowerMenu : MonoBehaviour
 {
-    private Button ArcherTower;
-    private Button SwordTower;
-    private Button WizardTower;
-    private Button Upgrade;
-    private Button MenuDestroy; // Hernoem de Destroy variabele naar MenuDestroy
+    private Button archerButton;
+    private Button swordButton;
+    private Button wizardButton;
+    private Button updateButton;
+    private Button destroyButton;
     private ConstructionSite selectedSite;
     private VisualElement root;
 
-    void Start()
-    {
-        root = GetComponent<UIDocument>().rootVisualElement;
-
-        ArcherTower = root.Q<Button>("archer-tower");
-        SwordTower = root.Q<Button>("sword-tower");
-        WizardTower = root.Q<Button>("wizard-tower");
-        Upgrade = root.Q<Button>("button-upgrade");
-        MenuDestroy = root.Q<Button>("button-destroy"); // Hernoem de variabele toegewezen aan de vernietigingsknop
-
-
-        if (ArcherTower != null)
-        {
-            ArcherTower.clicked += OnArcherButtonClicked;
-        }
-
-        if (SwordTower != null)
-        {
-            SwordTower.clicked += OnSwordButtonClicked;
-        }
-
-        if (WizardTower != null)
-        {
-            WizardTower.clicked += OnWizardButtonClicked;
-        }
-
-        if (Upgrade != null)
-        {
-            Upgrade.clicked += OnUpgradeButtonClicked;
-        }
-
-        if (MenuDestroy != null) // Gebruik de hernoemde variabele
-        {
-            MenuDestroy.clicked += OnDestroyButtonClicked; // Gebruik de hernoemde variabele
-        }
-
-        root.visible = false;
-    }
-
-    private void OnArcherButtonClicked()
-    {
-        GameManager.Instance.Build(TowerType.Archer, SiteLevel.Level1);
-    }
-
-    private void OnSwordButtonClicked()
-    {
-        GameManager.Instance.Build(TowerType.Sword, SiteLevel.Level1);
-    }
-
-    private void OnWizardButtonClicked()
-    {
-        GameManager.Instance.Build(TowerType.Wizard, SiteLevel.Level1);
-    }
-
-    private void OnUpgradeButtonClicked()
-    {
-        if (selectedSite == null)
-            return;
-
-        GameManager.Instance.Build(selectedSite.TowerType, selectedSite.Level + 1);
-    }
-
-    private void OnDestroyButtonClicked()
-    {
-        if (selectedSite == null)
-            return;
-
-        GameManager.Instance.Build(selectedSite.TowerType, SiteLevel.Unbuilt);
-    }
-
-    private void OnDestroy()
-    {
-        if (ArcherTower != null)
-        {
-            ArcherTower.clicked -= OnArcherButtonClicked;
-        }
-
-        if (SwordTower != null)
-        {
-            SwordTower.clicked -= OnSwordButtonClicked;
-        }
-
-        if (WizardTower != null)
-        {
-            WizardTower.clicked -= OnWizardButtonClicked;
-        }
-
-        if (Upgrade != null)
-        {
-            Upgrade.clicked -= OnUpgradeButtonClicked;
-        }
-
-        if (MenuDestroy != null) // Gebruik de hernoemde variabele
-        {
-            MenuDestroy.clicked -= OnDestroyButtonClicked; // Gebruik de hernoemde variabele
-        }
-    }
-
-    // Functie om het menu te evalueren en de knoppen in of uit te schakelen op basis van de huidige geselecteerde site
     public void EvaluateMenu()
     {
         if (selectedSite == null)
-            return;
-
-        switch (selectedSite.Level)
         {
-            case SiteLevel.Unbuilt:
-                ArcherTower.SetEnabled(true);
-                SwordTower.SetEnabled(true);
-                WizardTower.SetEnabled(true);
-                Upgrade.SetEnabled(false);
-                MenuDestroy.SetEnabled(false); // Gebruik de hernoemde variabele
+            // If selectedSite is null, return without enabling any buttons
+            return;
+        }
+
+        // Access the site level property of selectedSite
+        int siteLevel = (int)selectedSite.Level;
+
+        // Disable all buttons initially
+        archerButton.SetEnabled(false);
+        swordButton.SetEnabled(false);
+        wizardButton.SetEnabled(false);
+        updateButton.SetEnabled(false);
+        destroyButton.SetEnabled(false);
+
+        // Enable buttons based on site level using a switch statement
+        switch (siteLevel)
+        {
+            case 0:
+                // For site level 0, enable archer, wizard, and sword buttons
+                archerButton.SetEnabled(true);
+                wizardButton.SetEnabled(true);
+                swordButton.SetEnabled(true);
                 break;
-            case SiteLevel.Level1:
-            case SiteLevel.Level2:
-                ArcherTower.SetEnabled(false);
-                SwordTower.SetEnabled(false);
-                WizardTower.SetEnabled(false);
-                Upgrade.SetEnabled(true);
-                MenuDestroy.SetEnabled(true); // Gebruik de hernoemde variabele
+            case 1:
+            case 2:
+                // For site levels 1 and 2, enable update and destroy buttons
+                updateButton.SetEnabled(true);
+                destroyButton.SetEnabled(true);
                 break;
-            case SiteLevel.Level3:
-                ArcherTower.SetEnabled(false);
-                SwordTower.SetEnabled(false);
-                WizardTower.SetEnabled(false);
-                Upgrade.SetEnabled(false);
-                MenuDestroy.SetEnabled(true); // Gebruik de hernoemde variabele
+            case 3:
+                // For site level 3, only enable the destroy button
+                destroyButton.SetEnabled(true);
+                break;
+            default:
+                // Handle any other site levels if necessary
                 break;
         }
     }
-
-    // Functie om een constructiesite in te stellen als de geselecteerde site
     public void SetSite(ConstructionSite site)
     {
+        // Assign the site to the selectedSite variable
         selectedSite = site;
 
         if (selectedSite == null)
         {
+            // If the selected site is null, hide the menu and return
             root.visible = false;
             return;
         }
+        else
+        {
+            // If the selected site is not null, make sure the menu is visible
+            root.visible = true;
 
-        root.visible = true;
-        EvaluateMenu();
+            // Call the EvaluateMenu method to update button visibility
+            EvaluateMenu();
+        }
     }
+
+
+
+    void Start()
+
+    {
+
+        root = GetComponent<UIDocument>().rootVisualElement;
+
+
+
+        archerButton = root.Q<Button>("archer-tower");
+
+        swordButton = root.Q<Button>("sword-tower");
+
+        wizardButton = root.Q<Button>("wizard-tower");
+
+        updateButton = root.Q<Button>("upgrade");
+
+        destroyButton = root.Q<Button>("destroy");
+
+
+
+        if (archerButton != null)
+
+        {
+
+            archerButton.clicked += OnArcherButtonClicked;
+
+        }
+
+
+
+        if (swordButton != null)
+
+        {
+
+            swordButton.clicked += OnSwordButtonClicked;
+
+        }
+
+
+
+        if (wizardButton != null)
+
+        {
+
+            wizardButton.clicked += OnWizardButtonClicked;
+
+        }
+
+
+
+        if (updateButton != null)
+
+        {
+
+            updateButton.clicked += OnUpdateButtonClicked;
+
+        }
+
+
+
+        if (destroyButton != null)
+
+        {
+
+            destroyButton.clicked += OnDestroyButtonClicked;
+
+        }
+
+
+
+        root.visible = false;
+
+    }
+
+
+
+    private void OnArcherButtonClicked()
+
+    {
+
+        GameManager.Instance.Build(TowerType.Archer, SiteLevel.Unbuilt);
+
+    }
+
+
+
+    private void OnSwordButtonClicked()
+
+    {
+
+        GameManager.Instance.Build(TowerType.Sword, SiteLevel.Unbuilt);
+
+    }
+
+
+
+    private void OnWizardButtonClicked()
+
+    {
+
+        GameManager.Instance.Build(TowerType.Wizard, SiteLevel.Unbuilt);
+
+    }
+
+
+
+    private void OnUpdateButtonClicked()
+    {
+        if (selectedSite != null && selectedSite.Level < SiteLevel.Level3)
+        {
+            selectedSite.Level++;
+            EvaluateMenu();
+        }
+    }
+
+
+    private void OnDestroyButtonClicked()
+    {
+        if (selectedSite != null)
+        {
+            TowerType towerType = selectedSite.GetTowerType();
+            // Vernietig de toren op de geselecteerde site
+            selectedSite.SetTower(null, SiteLevel.Unbuilt, towerType);
+            // Zet het niveau van de site op 0
+            selectedSite.Level = SiteLevel.Unbuilt;
+            // Update de knoppen in de torenmenu
+            EvaluateMenu();
+        }
+    }
+
+
+
+    private void OnDestroy()
+
+    {
+
+        if (archerButton != null)
+
+        {
+
+            archerButton.clicked -= OnArcherButtonClicked;
+
+        }
+
+
+
+        if (swordButton != null)
+
+        {
+
+            swordButton.clicked -= OnSwordButtonClicked;
+
+        }
+
+
+
+        if (wizardButton != null)
+
+        {
+
+            wizardButton.clicked -= OnWizardButtonClicked;
+
+        }
+
+
+
+        if (updateButton != null)
+
+        {
+
+            updateButton.clicked -= OnUpdateButtonClicked;
+
+        }
+
+
+
+        if (destroyButton != null)
+
+        {
+
+            destroyButton.clicked -= OnArcherButtonClicked;
+
+        }
+
+    }
+
 }
