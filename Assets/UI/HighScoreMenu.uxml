@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement style="flex-grow: 1;">
+        <ui:Label tabindex="-1" text="Game Over" parse-escape-sequences="true" display-tooltip-when-elided="true" style="position: absolute; top: 92px; left: 300px; font-size: 20px;" />
+    </ui:VisualElement>
+    <ui:Label tabindex="-1" text="HighScores" parse-escape-sequences="true" display-tooltip-when-elided="true" style="position: absolute; top: 146px; left: 314px;" />
+    <ui:Label tabindex="-1" text="..." parse-escape-sequences="true" display-tooltip-when-elided="true" style="position: absolute; top: 211px; left: 340px;" />
+    <ui:Label tabindex="-1" text="..." parse-escape-sequences="true" display-tooltip-when-elided="true" style="position: absolute; top: 194px; left: 340px;" />
+    <ui:Label tabindex="-1" text="..." parse-escape-sequences="true" display-tooltip-when-elided="true" style="position: absolute; top: 240px; left: 340px;" />
+    <ui:Label tabindex="-1" text="..." parse-escape-sequences="true" display-tooltip-when-elided="true" style="position: absolute; top: 179px; left: 340px;" />
+    <ui:Label tabindex="-1" text="..." parse-escape-sequences="true" display-tooltip-when-elided="true" style="position: absolute; top: 227px; left: 340px;" />
+</ui:UXML>
