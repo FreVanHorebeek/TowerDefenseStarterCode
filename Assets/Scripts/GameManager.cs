@@ -13,17 +13,20 @@ public class GameManager : MonoBehaviour
     public GameObject TopMenu;
     private TopMenu topMenu;
 
+    private EnemySpawner enemySpawner;
+
     private ConstructionSite selectedSite;
     public List<GameObject> Archers = new List<GameObject>();
     public List<GameObject> Swords = new List<GameObject>();
     public List<GameObject> Wizards = new List<GameObject>();
 
-    private int credits = 200;
-    private int health = 10;
-    private int currentWave = 0;
+    private int credits;
+    private int health;
+    public int currentWave = 0;
     private bool waveActive = false;
-
+    public int MaxWave = 5;
     private int enemyInGameCounter = 0;
+
 
     void Awake()
     {
@@ -36,6 +39,7 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        enemySpawner = FindObjectOfType<EnemySpawner>(); // Zoek de EnemySpawner in de scene
     }
 
     void Start()
@@ -45,25 +49,27 @@ public class GameManager : MonoBehaviour
         StartGame();
     }
 
-    void StartGame()
+    private void StartGame()
     {
+        if (!waveActive)
+        {
+            waveActive = true;
+            Debug.Log("Starting Wave " + currentWave);
 
-        // Stel de waarden in voor credits, health en currentWave
-        credits = 200;
-        health = 10;
-        currentWave = 0;
+            // Stel de waarden in voor credits, health en currentWave
+            credits = 200;
+            health = 100;
 
-        // Gebruik de functies van TopMenu om de tekst voor elk label in te stellen
-        topMenu.SetCreditsLabel("Credits: " + credits.ToString());
-        topMenu.SetGateHealthLabel("Health: " + health.ToString());
-        topMenu.SetWaveLabel("Wave: " + currentWave.ToString());
-        // Zet waveActive op false bij het starten van de game
 
-        waveActive = false; // Zorg ervoor dat waveActive false is bij het starten van het spel
-        UpdateLabels();
+            // Gebruik de functies van TopMenu om de tekst voor elk label in te stellen
+            topMenu.SetCreditsLabel("Credits: " + credits.ToString());
+            topMenu.SetGateHealthLabel("Health: " + health.ToString());
+            topMenu.SetWaveLabel("Wave: " + currentWave.ToString());
+
+        }
     }
 
-    public void AddInGameEnemy()
+        public void AddInGameEnemy()
     {
         enemyInGameCounter++;
     }

@@ -27,26 +27,32 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    void Update()
+    private void Update()
     {
         float step = speed * Time.deltaTime;
-        transform.position = Vector2.MoveTowards(transform.position, target.transform.position, step);
 
-        // Controleer hoe dicht we bij het doelwit zijn
+        Vector2 vector2 = Vector2.MoveTowards(transform.position, target.transform.position, step);
+        transform.position = vector2;
+
+        // Check how close we are to the target
         if (Vector2.Distance(transform.position, target.transform.position) < 0.1f)
         {
-            // Als we dichtbij zijn, vraag een nieuw doelwit aan
+            // If close, request a new waypoint
             target = EnemySpawner.instance.RequestTarget(path, pathIndex);
             pathIndex++;
 
-            // Als het doelwit null is, zijn we aan het einde van het pad gekomen. Vernietig de vijand op dit punt
+            // If target is null, we have reached the end of the path.
+            // Destroy the enemy at this point
             if (target == null)
             {
-                // Als het doelwit null is, roep de AttackGate-functie van GameManager aan
                 GameManager.Instance.AttackGate();
-
                 Destroy(gameObject);
             }
         }
+    }
+    // Function added to set the path index
+    public void SetPathIndex(int index)
+    {
+        pathIndex = index;
     }
 }

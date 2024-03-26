@@ -1,8 +1,13 @@
+using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class TopMenu : MonoBehaviour
 {
+    public UIDocument uIDocument;
+
+    public GameManager gameManager;
+
     private Label WaveLabel;
     private Label CreditsLabel;
     private Label GHealthLabel;
@@ -10,19 +15,43 @@ public class TopMenu : MonoBehaviour
 
     private VisualElement root;
 
-    void Start()
+    private void Start()
     {
-        root = GetComponent<UIDocument>().rootVisualElement;
+        Debug.Log("uIDocument: " + uIDocument);
+        Debug.Log("WaveLabel: " + WaveLabel);
+        Debug.Log("CreditsLabel: " + CreditsLabel);
+        Debug.Log("GHealthLabel: " + GHealthLabel);
+        Debug.Log("PlayButton: " + PlayButton);
 
-        WaveLabel = root.Q<Label>("Wave");
-        CreditsLabel = root.Q<Label>("Credits");
-        GHealthLabel = root.Q<Label>("Gate-Health");
-        PlayButton = root.Q<Button>("Play-Button");
+        // Zoek de labels en button in de UI-document hiërarchie
+        WaveLabel = uIDocument.rootVisualElement.Q<Label>("Wave");
+        CreditsLabel = uIDocument.rootVisualElement.Q<Label>("Credits");
+        GHealthLabel = uIDocument.rootVisualElement.Q<Label>("Gate");
+        PlayButton = uIDocument.rootVisualElement.Q<Button>("Play");
+
+        // Controleer of de labels en button zijn gevonden
+        if (WaveLabel == null || CreditsLabel == null || GHealthLabel == null || PlayButton == null)
+        {
+            Debug.LogError("One or more UI elements not found in UI document!");
+        }
 
         if (PlayButton != null)
         {
-            PlayButton.clicked += OnPlayButtonClicked;
+            // Voeg een event listener toe aan de button
+            PlayButton.clicked += StartWave;
         }
+        else
+        {
+            // Log een fout als de PlayButton niet kon worden gevonden
+            Debug.LogError("De PlayButton kon niet worden gevonden.");
+        }
+    }
+
+
+    void StartWave()
+    {
+        GameManager.Instance.StartWave();
+
     }
 
     public void SetWaveLabel(string text)
@@ -49,29 +78,43 @@ public class TopMenu : MonoBehaviour
         }
     }
 
-    private void OnPlayButtonClicked()
+    void OnDestroy()
     {
-        GameManager.Instance.StartWave();
-        if (PlayButton != null)
+        PlayButton.clicked -= StartWave;
+    }
+    public void startWaveButton_clicked()
+    {
+        SetWaveLabel("Wave " + (GameManager.Instance.currentWave + 1)); // Voeg 1 toe aan de huidige golfindex
+        if (gameManager != null)
         {
-            PlayButton.SetEnabled(false);
+            gameManager.StartWave();
+            DisableWaveButton();
+        }
+        else
+        {
+            Debug.LogWarning("GameManager not found!");
         }
     }
-
     public void EnableWaveButton()
     {
-        // Zorgt ervoor dat de knop weer interactief is na het beëindigen van een wave
         if (PlayButton != null)
         {
             PlayButton.SetEnabled(true);
         }
+        else
+        {
+            Debug.LogWarning("WaveButton not assigned!");
+        }
     }
-
-    private void OnDestroy()
+    private void DisableWaveButton()
     {
         if (PlayButton != null)
-        {           
-            PlayButton.clicked -= OnPlayButtonClicked;
+        {
+            PlayButton.SetEnabled(false);
+        }
+        else
+        {
+            Debug.LogWarning("WaveButton not assigned!");
         }
     }
 }

@@ -32,45 +32,44 @@ public class TowerMenu : MonoBehaviour
     public void EvaluateMenu()
     {
         if (selectedSite == null)
-        {
-            // If selectedSite is null, return without enabling any buttons
             return;
-        }
 
-        // Access the site level property of selectedSite
-        int siteLevel = (int)selectedSite.Level;
+        // Haal het niveau van de geselecteerde constructieplaats op
+        SiteLevel siteLevel = selectedSite.Level;
 
-        // Get the available credits from the GameManager
-        int credits = GameManager.Instance.GetCredits();
+        // Haal de beschikbare credits op van de GameManager
+        int availableCredits = GameManager.Instance.GetCredits();
 
-        // Disable all buttons initially
+        // Schakel alle knoppen in het torenmenu uit
         archerButton.SetEnabled(false);
         swordButton.SetEnabled(false);
         wizardButton.SetEnabled(false);
         updateButton.SetEnabled(false);
         destroyButton.SetEnabled(false);
-
-        // Enable buttons based on site level using a switch statement
+        // Gebruik een switch om de knoppen in te schakelen op basis van het niveau van de constructieplaats
         switch (siteLevel)
         {
-            case 0:
-                // For site level 0, enable archer, wizard, and sword buttons
-                archerButton.SetEnabled(credits >= GameManager.Instance.GetCost(TowerType.Archer, SiteLevel.Level1));
-                wizardButton.SetEnabled(credits >= GameManager.Instance.GetCost(TowerType.Wizard, SiteLevel.Level1));
-                swordButton.SetEnabled(credits >= GameManager.Instance.GetCost(TowerType.Sword, SiteLevel.Level1));
+            case Enums.SiteLevel.Unbuilt:
+                // Alleen de torenknoppen moeten worden ingeschakeld als er voldoende credits zijn
+                if (availableCredits >= GameManager.Instance.GetCost(TowerType.Archer, Enums.SiteLevel.Unbuilt))
+                    archerButton.SetEnabled(true);
+                if (availableCredits >= GameManager.Instance.GetCost(TowerType.Sword, Enums.SiteLevel.Unbuilt))
+                    swordButton.SetEnabled(true);
+                if (availableCredits >= GameManager.Instance.GetCost(TowerType.Wizard, Enums.SiteLevel.Unbuilt))
+                    wizardButton.SetEnabled(true);
                 break;
-            case 1:
-            case 2:
-                // For site levels 1 and 2, enable update and destroy buttons
-                updateButton.SetEnabled(credits >= GameManager.Instance.GetCost(selectedSite.GetTowerType(), selectedSite.Level + 1));
+            case Enums.SiteLevel.Level1:
+            case Enums.SiteLevel.Level2:
+                // Alleen de update- en destroy-knoppen moeten werken
+                updateButton.SetEnabled(true);
                 destroyButton.SetEnabled(true);
                 break;
-            case 3:
-                // For site level 3, only enable the destroy button
+            case Enums.SiteLevel.Level3:
+                // Alleen de destroy-knop moet werken
                 destroyButton.SetEnabled(true);
                 break;
             default:
-                // Handle any other site levels if necessary
+                Debug.LogWarning("Unknown site level: " + siteLevel);
                 break;
         }
     }
