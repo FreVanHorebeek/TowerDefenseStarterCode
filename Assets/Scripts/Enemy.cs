@@ -19,6 +19,9 @@ public class Enemy : MonoBehaviour
         // Controleer of de gezondheid van de vijand nul of kleiner is
         if (health <= 0)
         {
+            // Als de gezondheid nul of lager is, roep de AddCredits-functie van GameManager aan met het aantal punten
+            GameManager.Instance.AddCredits(points);
+
             // Vernietig de vijand
             Destroy(gameObject);
         }
@@ -39,9 +42,11 @@ public class Enemy : MonoBehaviour
             // Als het doelwit null is, zijn we aan het einde van het pad gekomen. Vernietig de vijand op dit punt
             if (target == null)
             {
+                // Als het doelwit null is, roep de AttackGate-functie van GameManager aan
+                GameManager.Instance.AttackGate();
+
                 Destroy(gameObject);
             }
         }
     }
 }
-

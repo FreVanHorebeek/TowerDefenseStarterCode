@@ -13,11 +13,15 @@ public class TopMenu : MonoBehaviour
     private Button startWaveButton;
 
     private VisualElement root;
+
+    public static TopMenu Instance { get; private set; }
+
     void Awake()
     {
         // Root element verkrijgen
         root = GetComponent<UIDocument>().rootVisualElement;
     }
+
     void Start()
     {
         // Zoek de labels en button in de UI-document hiërarchie
@@ -36,13 +40,15 @@ public class TopMenu : MonoBehaviour
         startWaveButton.clicked += StartWave;
     }
 
-    // Voeg hier je functie toe om een wave te starten
+    // Functie om een wave te starten
     void StartWave()
     {
+        Debug.Log("Starting wave...");
         // Voeg hier de logica toe om een wave te starten
+        GameManager.Instance.IncreaseWave();
     }
 
-    // Voeg hier de functies toe om de labels aan te passen
+    // Functies om de labels aan te passen
     public void SetWaveLabel(string text)
     {
         waveLabel.text = text;

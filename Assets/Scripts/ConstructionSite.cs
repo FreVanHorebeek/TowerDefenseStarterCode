@@ -9,6 +9,8 @@ public class ConstructionSite
     public SiteLevel Level { get; set; }
     public TowerType TowerType { get; set; }
     private GameObject tower;
+    private GameObject currentTower;
+
     public ConstructionSite(Vector3Int tilePosition, Vector3 worldPosition)
     {
         // Wijs de tilePosition en worldPosition toe.
@@ -34,6 +36,17 @@ public class ConstructionSite
         tower = newTower;
         Level = newLevel;
         TowerType = newType;
+    }
+    public void ClearTower()
+    {
+        // Controleer eerst of er een toren is
+        if (currentTower != null)
+        {
+            // Verwijder de toren uit de scène
+            Tower.Destroy(currentTower);
+            // Zet de huidige toren naar null om aan te geven dat er geen toren is
+            currentTower = null;
+        }
     }
     public Vector3 BuildPosition()
     {

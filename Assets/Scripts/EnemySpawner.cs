@@ -9,6 +9,7 @@ public class EnemySpawner : MonoBehaviour
     public List<GameObject> Path2 = new List<GameObject>();
     public List<GameObject> Enemies = new List<GameObject>();
 
+    private int ufoCounter = 0; // Toegevoegde variabele
     private void Awake()
     {
         if (instance == null)
@@ -94,10 +95,39 @@ public class EnemySpawner : MonoBehaviour
     // Deze methode wordt aangeroepen bij het starten van het spel
     void Start()
     {
-        // Voorbeeld: roep SpawnTester aan met een interval van 1 seconde
-        InvokeRepeating("SpawnTester", 1f, 1f);
+        // Start een golf met een bepaald nummer, bijvoorbeeld:
+        StartWave(1);
+    }
+    public void StartWave(int number)
+    {
+        ufoCounter = 0;
+        switch (number)
+        {
+            case 1:
+                InvokeRepeating("StartWave1", 1f, 1.5f);
+                break;
+                // Voeg hier cases toe voor extra waves
+        }
     }
 
+    public void StartWave1()
+    {
+        ufoCounter++;
+        if (ufoCounter % 6 <= 1) return;
+        if (ufoCounter < 30)
+        {
+            SpawnEnemy(0, Enums.Path.Path1);
+        }
+        else
+        {
+            SpawnEnemy(1, Enums.Path.Path1); // Laatste vijand is niveau 2
+        }
+        if (ufoCounter > 30)
+        {
+            CancelInvoke("StartWave1"); // Beëindig deze wave
+            GameManager.Instance.EndWave(); // Laat GameManager weten dat de golf voorbij is
+        }
+    }
     // Deze methode wordt elke seconde aangeroepen om een vijand te spawnen voor testdoeleinden
     private void SpawnTester()
     {
