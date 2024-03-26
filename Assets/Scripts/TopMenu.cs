@@ -1,72 +1,77 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class TopMenu : MonoBehaviour
 {
-    public UIDocument uiDocument;
-
-    private Label waveLabel;
-    private Label creditsLabel;
-    private Label healthLabel;
-    private Button startWaveButton;
+    private Label WaveLabel;
+    private Label CreditsLabel;
+    private Label GHealthLabel;
+    private Button StartButton;
 
     private VisualElement root;
 
-    public static TopMenu Instance { get; private set; }
-
-    void Awake()
-    {
-        // Root element verkrijgen
-        root = GetComponent<UIDocument>().rootVisualElement;
-    }
-
     void Start()
     {
-        // Zoek de labels en button in de UI-document hiërarchie
-        waveLabel = uiDocument.rootVisualElement.Q<Label>("waveLabel");
-        creditsLabel = uiDocument.rootVisualElement.Q<Label>("creditsLabel");
-        healthLabel = uiDocument.rootVisualElement.Q<Label>("healthLabel");
-        startWaveButton = uiDocument.rootVisualElement.Q<Button>("startWaveButton");
+        root = GetComponent<UIDocument>().rootVisualElement;
 
-        // Controleer of de labels en button zijn gevonden
-        if (waveLabel == null || creditsLabel == null || healthLabel == null || startWaveButton == null)
+        WaveLabel = root.Q<Label>("Wave");
+        CreditsLabel = root.Q<Label>("Credits");
+        GHealthLabel = root.Q<Label>("Gate-Health");
+        StartButton = root.Q<Button>("Play-Button");
+
+        if (StartButton != null)
         {
-            Debug.LogError("One or more UI elements not found in UI document!");
+            StartButton.clicked += OnPlayButtonClicked;
         }
-
-        // Voeg een event listener toe aan de button
-        startWaveButton.clicked += StartWave;
     }
 
-    // Functie om een wave te starten
-    void StartWave()
-    {
-        Debug.Log("Starting wave...");
-        // Voeg hier de logica toe om een wave te starten
-        GameManager.Instance.IncreaseWave();
-    }
-
-    // Functies om de labels aan te passen
     public void SetWaveLabel(string text)
     {
-        waveLabel.text = text;
+        if (WaveLabel != null)
+        {
+            WaveLabel.text = text;
+        }
     }
 
     public void SetCreditsLabel(string text)
     {
-        creditsLabel.text = text;
+        if (CreditsLabel != null)
+        {
+            CreditsLabel.text = text;
+        }
     }
 
-    public void SetHealthLabel(string text)
+    public void SetGateHealthLabel(string text)
     {
-        healthLabel.text = text;
+        if (GHealthLabel != null)
+        {
+            GHealthLabel.text = text;
+        }
     }
 
-    // Voeg OnDestroy toe om de callback van de button te verwijderen
-    void OnDestroy()
+    private void OnPlayButtonClicked()
     {
-        startWaveButton.clicked -= StartWave;
+        GameManager.Instance.StartWave();
+        if (StartButton != null)
+        {
+            StartButton.SetEnabled(false);
+        }
+    }
+
+    public void EnableWaveButton()
+    {
+        // Zorgt ervoor dat de knop weer interactief is na het beëindigen van een wave
+        if (StartButton != null)
+        {
+            StartButton.SetEnabled(true);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (StartButton != null)
+        {
+            StartButton.clicked -= OnPlayButtonClicked;
+        }
     }
 }

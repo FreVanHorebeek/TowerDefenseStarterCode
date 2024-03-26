@@ -1,46 +1,34 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static Enums;
 
 public class GameManager : MonoBehaviour
 {
-    private static GameManager instance;
+    public static GameManager Instance { get; private set; }
 
-    private ConstructionSite selectedSite;
     public GameObject TowerMenu;
     private TowerMenu towerMenu;
-    public List<GameObject> Archers = new List<GameObject>();
-    public List<GameObject> Swords = new List<GameObject>();
-    public List<GameObject> Wizards = new List<GameObject>();
 
-    private int credits; // Nieuwe variabele voor credits
-    private int health; // Nieuwe variabele voor gezondheid
-    private int currentWave; // Nieuwe variabele voor huidige golf
+    public GameObject TopMenu;
+    private TopMenu topMenu;
 
-    private bool waveActive = false; // Variabele om de status van de golf bij te houden
+    private ConstructionSite selectedSite;
+    public List<GameObject> Archers;
+    public List<GameObject> Swords;
+    public List<GameObject> Wizards;
 
-    public static GameManager Instance
+    private int credits = 200, 
+    health = 10, 
+    currentWave = 0;
+    private bool waveActive = false;
+
+    private int enemyInGameCounter = 0;
+
+    void Awake()
     {
-        get
+        if (Instance == null)
         {
-            if (instance == null)
-            {
-                instance = FindObjectOfType<GameManager>();
-                if (instance == null)
-                {
-                    GameObject obj = new GameObject("GameManager");
-                    instance = obj.AddComponent<GameManager>();
-                }
-            }
-            return instance;
-        }
-    }
-
-    private void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
+            Instance = this;
             DontDestroyOnLoad(gameObject);
         }
         else
@@ -49,185 +37,216 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void Start()
+    void Start()
     {
         towerMenu = TowerMenu.GetComponent<TowerMenu>();
-        StartGame(); // Start het spel wanneer GameManager wordt gestart
+        topMenu = TopMenu.GetComponent<TopMenu>();
+        StartGame();
     }
 
-    // Functie om het spel te starten en waarden in te stellen
-    private void StartGame()
+    void StartGame()
     {
-        credits = 200; // Stel credits in op 200
-        health = 10; // Stel gezondheid in op 10
-        currentWave = 0; // Stel huidige golf in op 0
-
-        // Stel de tekst voor elk label in het TopMenu in
-        towerMenu.SetCreditsLabel("Credits: " + credits);
-        towerMenu.SetHealthLabel("Health: " + health);
-        towerMenu.SetWaveLabel("Wave: " + currentWave);
+        credits = 200;
+        health = 10;
+        currentWave = 0;
+        waveActive = false; // Zorg ervoor dat waveActive false is bij het starten van het spel
+        UpdateLabels();
     }
 
-    // Functie om een toren te bouwen of te verkopen
-    public void Build(TowerType type, SiteLevel level)
+    public void AddInGameEnemy()
     {
-        // Je kunt niet bouwen als er geen site is geselecteerd
-        if (selectedSite == null)
-        {
-            return;
-        }
+        enemyInGameCounter++;
+    }
 
-        // Bepaal de kosten voor het bouwen of verkopen van de toren
-        int cost = GetCost(type, level, selectedSite.Level == SiteLevel.Unbuilt);
-
-        // Controleer of de speler voldoende credits heeft
-        if (cost <= credits)
+    public void RemoveInGameEnemy()
+    {
+        enemyInGameCounter--;
+        if (!waveActive && enemyInGameCounter <= 0)
         {
-            // Bouw of verkoop de toren
-            if (selectedSite.Level == SiteLevel.Unbuilt)
+            if (!waveActive && enemyInGameCounter <= 0)
             {
-                // Bouw de toren
-                GameObject towerPrefab = GetTowerPrefab(type, level);
-                Vector3 buildPosition = selectedSite.BuildPosition();
-                GameObject towerInstance = Instantiate(towerPrefab, buildPosition, Quaternion.identity);
-                selectedSite.SetTower(towerInstance, level, type);
-                RemoveCredits(cost); // Verlaag de credits na het bouwen van de toren
+                // Logica voor het einde van de game
             }
             else
             {
-                // Verkoop de toren
-                AddCredits(cost); // Voeg credits toe na het verkopen van de toren
-                selectedSite.ClearTower();
+                // Activeer de wave button in het top menu
+                topMenu.EnableWaveButton();
             }
-
-            towerMenu.SetSite(null);
-        }
-        else
-        {
-            Debug.Log("Not enough credits!");
         }
     }
 
-    // Functie om de kosten voor het bouwen of verkopen van een toren te krijgen
-    public int GetCost(TowerType type, SiteLevel level, bool selling = false)
+    public void StartWave()
     {
-        int cost = 0;
-
-        // Bereken de kosten op basis van het type en het niveau van de toren
-        switch (type)
+        if (!waveActive)
         {
-            case TowerType.Archer:
-                cost = 50; // Stel hier de kosten in voor de boogschutterstoren
-                break;
-            case TowerType.Sword:
-                cost = 75; // Stel hier de kosten in voor de zwaardtoren
-                break;
-            case TowerType.Wizard:
-                cost = 100; // Stel hier de kosten in voor de toren van de tovenaar
-                break;
-            default:
-                Debug.LogError("Unknown tower type!");
-                break;
+            waveActive = true;
+            currentWave++;
+            enemyInGameCounter = 0; // Reset de teller aan het begin van de wave
+            UpdateLabels();
+            EnemySpawner.instance.StartWave(currentWave);
         }
-
-        // Als het gaat om een verkoop, halveer dan de kosten
-        if (selling)
-        {
-            cost /= 2;
-        }
-
-        // Als het een upgrade is, verhoog dan de kosten op basis van het huidige niveau
-        if (level != SiteLevel.Unbuilt)
-        {
-            cost *= ((int)level + 1);
-        }
-
-        return cost;
     }
 
-    // Functie om credits toe te voegen
+    public void EndWave()
+    {
+        waveActive = false;
+    }
+
+    private void UpdateLabels()
+    {
+        topMenu.SetCreditsLabel("Credits: " + credits);
+        topMenu.SetGateHealthLabel("Health: " + health);
+        topMenu.SetWaveLabel("Wave: " + currentWave);
+    }
+
+
+    public void AttackGate()
+    {
+        health -= 1;
+        topMenu.SetGateHealthLabel("Health: " + health);
+    }
+
     public void AddCredits(int amount)
     {
         credits += amount;
-        towerMenu.SetCreditsLabel("Credits: " + credits);
+        topMenu.SetCreditsLabel("Credits: " + credits);
+        // Hier toekomstige logica voor towerMenu evaluatie
     }
 
-    // Functie om credits te verwijderen
-    private void RemoveCredits(int amount)
+    public void RemoveCredits(int amount)
     {
         credits -= amount;
-        towerMenu.SetCreditsLabel("Credits: " + credits);
+        topMenu.SetCreditsLabel("Credits: " + credits);
+        // Hier toekomstige logica voor towerMenu evaluatie
     }
+
     public int GetCredits()
     {
         return credits;
     }
 
-    // Functie om de gezondheid te verminderen
-    public void AttackGate()
+    public int GetCost(Enums.TowerType type, Enums.SiteLevel level, bool selling = false)
     {
-        health--;
-        towerMenu.SetHealthLabel("Health: " + health);
-    }
+        // Basis kosten bepalen op basis van type en level, dit is een voorbeeld
+        int cost = 100; // Stel dit in op de daadwerkelijke kosten
 
-    // Functie om het aantal golven te verhogen
-    public void IncreaseWave()
-    {
-        currentWave++;
-        towerMenu.SetWaveLabel("Wave: " + currentWave);
-    }
-
-    // Functie om het aantal golven te verlagen
-    public void DecreaseWave()
-    {
-        currentWave--;
-        if (currentWave < 0)
+        // Pas de kosten aan op basis van of het een verkoop is
+        if (selling)
         {
-            currentWave = 0;
+            // Verkoopwaarde is bijvoorbeeld de helft van de aankoopprijs
+            return cost / 2;
         }
-        towerMenu.SetWaveLabel("Wave: " + currentWave);
+        else
+        {
+            return cost;
+        }
     }
 
     public void SelectSite(ConstructionSite site)
     {
+        // Onthoud de geselecteerde site
         selectedSite = site;
-        towerMenu.SetSite(site);
+
+        // Controleer of towerMenu niet null is
+        if (towerMenu != null)
+        {
+            // Gebruik de reeds bestaande referentie naar TowerMenu
+            towerMenu.SetSite(site);
+        }
+        else
+        {
+            // Log een fout als TowerMenu om een of andere reden null is.
+            Debug.LogError("TowerMenu component is null in GameManager.");
+        }
     }
 
-    // Functie om de prefab van de toren op te halen op basis van het type en niveau
-    private GameObject GetTowerPrefab(TowerType type, SiteLevel level)
+    public void Build(Enums.TowerType type, Enums.SiteLevel level)
     {
-        List<GameObject> towerList = null;
+        // Controleer of er een site geselecteerd is. Zo niet, log een fout en keer terug.
+        if (selectedSite == null)
+        {
+            Debug.LogError("Er is geen bouwplaats geselecteerd. Kan de toren niet bouwen.");
+            return;
+        }
+
+        // Logica voor het aanpassen van credits afhankelijk van aankoop of verkoop
+        if (level == Enums.SiteLevel.Unbuilt)
+        {
+            // Verkooplogica
+            AddCredits(GetCost(type, selectedSite.Level, true));
+        }
+        else
+        {
+            // Aankooplogica
+            int cost = GetCost(type, level);
+            if (GetCredits() >= cost)
+            {
+                RemoveCredits(cost);
+            }
+            else
+            {
+                Debug.LogError("Niet genoeg credits om de toren te bouwen.");
+                return;
+            }
+        }
+
+        GameObject towerPrefab = null;
+
+        // Trek 1 af van de level waarde om de correcte index te krijgen
+        int prefabIndex = (int)level - 1;
 
         switch (type)
         {
-            case TowerType.Archer:
-                towerList = Archers;
+            case Enums.TowerType.Archer:
+                towerPrefab = Archers[prefabIndex];
                 break;
-            case TowerType.Sword:
-                towerList = Swords;
+            case Enums.TowerType.Sword:
+                towerPrefab = Swords[prefabIndex];
                 break;
-            case TowerType.Wizard:
-                towerList = Wizards;
+            case Enums.TowerType.Wizard:
+                towerPrefab = Wizards[prefabIndex];
                 break;
         }
 
-        return towerList[(int)level];
+        if (towerPrefab == null)
+        {
+            Debug.LogError("Geen tower prefab gevonden voor het geselecteerde type en niveau.");
+            return;
+        }
+
+        // Gebruik de WorldPosition van de selectedSite voor het positioneren van de nieuwe toren
+        GameObject tower = Instantiate(towerPrefab, selectedSite.WorldPosition, Quaternion.identity);
+
+        // Gebruik de SetTower methode van de ConstructionSite om de nieuwe toren in te stellen en te configureren
+        selectedSite.SetTower(tower, level, type);
+
+        if (towerMenu != null)
+        {
+            towerMenu.SetSite(null); // Verberg het towerMenu
+        }
     }
 
-    // Functie om een golf te starten
-    public void StartWave()
+    public void DestroyTower()
     {
-        currentWave++;
-        towerMenu.SetWaveLabel("Wave: " + currentWave);
-        waveActive = true;
-        EnemySpawner.instance.StartWave(currentWave); // Start de nieuwe golf
-    }
+        if (selectedSite == null)
+        {
+            Debug.LogError("Er is geen bouwplaats geselecteerd. Kan de toren niet verwijderen.");
+            return;
+        }
 
-    // Functie om een golf te beëindigen
-    public void EndWave()
-    {
-        waveActive = false;
-        // Voeg hier eventuele extra logica toe voor het beëindigen van een golf
+        // Bereken de verkoopwaarde van de toren
+        int sellValue = GetCost(selectedSite.TowerType, selectedSite.Level, selling: true);
+
+        // Voeg de verkoopwaarde toe aan de spelercredits
+        AddCredits(sellValue);
+
+        // Roep de RemoveTower methode aan van de selectedSite
+        selectedSite.ClearTower();
+
+        // Verberg het towerMenu als dat nodig is
+        if (towerMenu != null)
+        {
+            towerMenu.SetSite(null);
+        }
     }
 }
