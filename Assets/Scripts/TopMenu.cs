@@ -23,6 +23,7 @@ public class TopMenu : MonoBehaviour
         Debug.Log("GHealthLabel: " + GHealthLabel);
         Debug.Log("PlayButton: " + PlayButton);
 
+        var root = GetComponent<UIDocument>().rootVisualElement;
         // Zoek de labels en button in de UI-document hiërarchie
         WaveLabel = uIDocument.rootVisualElement.Q<Label>("Wave");
         CreditsLabel = uIDocument.rootVisualElement.Q<Label>("Credits");
@@ -84,7 +85,7 @@ public class TopMenu : MonoBehaviour
     }
     public void startWaveButton_clicked()
     {
-        SetWaveLabel("Wave " + (GameManager.Instance.currentWave + 1)); // Voeg 1 toe aan de huidige golfindex
+        SetWaveLabel("Wave " + (GameManager.Instance.currentWave + 1)); // Voeg 1 toe aan de huidige waveindex
         if (gameManager != null)
         {
             gameManager.StartWave();

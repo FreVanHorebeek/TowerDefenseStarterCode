@@ -10,128 +10,179 @@ public class EnemySpawner : MonoBehaviour
     public List<GameObject> Enemies = new List<GameObject>();
 
     private int ufoCounter = 0; // Toegevoegde variabele
-    private void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-        }
-        else if (instance != this)
-        {
-            Destroy(gameObject);
-        }
-    }
+
+    private GameManager gameManager;
 
     // Deze methode retourneert het doelwit voor het opgegeven pad en index
     public GameObject RequestTarget(Enums.Path path, int index)
     {
-        List<GameObject> selectedPath;
+        List<GameObject> selectedPath = path == Enums.Path.Path1 ? Path1 : Path2;
 
-        // Selecteer het juiste pad op basis van de meegegeven 'path' parameter
-        if (path == Enums.Path.Path1)
-            selectedPath = Path1;
-        else if (path == Enums.Path.Path2)
-            selectedPath = Path2;
+        if (index < selectedPath.Count)
+            return selectedPath[index];
         else
-        {
-            Debug.LogError("Ongeldig pad gespecificeerd!");
             return null;
-        }
-
-        // Controleer of de index binnen het bereik van het pad ligt
-        if (index >= 0 && index < selectedPath.Count)
-            return selectedPath[index]; // Retourneer het doelwit op de gegeven index
-        else
-        {
-            Debug.LogError("Ongeldige index gespecificeerd!");
-            return null;
-        }
     }
 
     // Deze methode spawnt een vijand van het opgegeven type en plaatst deze op het begin van het opgegeven pad
     private void SpawnEnemy(int type, Enums.Path path)
     {
-        Vector3 spawnPosition;
-        Quaternion spawnRotation;
+        List<GameObject> selectedPath = path == Enums.Path.Path1 ? Path1 : Path2;
 
-        // Bepaal de spawnpositie en -rotatie op basis van het opgegeven pad
-        if (path == Enums.Path.Path1)
+        if (selectedPath.Count < 2)
         {
-            spawnPosition = Path1[0].transform.position;
-            spawnRotation = Path1[0].transform.rotation;
-        }
-        else if (path == Enums.Path.Path2)
-        {
-            spawnPosition = Path2[0].transform.position;
-            spawnRotation = Path2[0].transform.rotation;
-        }
-        else
-        {
-            // Handel fout of standaardgeval af
-            spawnPosition = Vector3.zero;
-            spawnRotation = Quaternion.identity;
-            Debug.LogError("Ongeldig pad gespecificeerd!");
+            Debug.LogError("Path doesn't have enough waypoints.");
             return;
         }
 
-        // Instantieer de vijand op de spawnpositie met de spawnrotatie
-        var newEnemy = Instantiate(Enemies[type], spawnPosition, spawnRotation);
+        var newEnemy = Instantiate(Enemies[type], selectedPath[0].transform.position, selectedPath[0].transform.rotation);
+        var script = newEnemy.GetComponent<Enemy>();
+        script.path = path;
+        script.target = selectedPath[1];
 
-        // Je kunt hier eventueel extra logica toevoegen om het pad en doelwit voor de vijand in te stellen
-        // Haal het Enemy-component op van de nieuw gespawnde vijand
-        var enemyScript = newEnemy.GetComponent<Enemy>();
-        if (enemyScript != null)
+        gameManager.AddInGameEnemy();
+    }
+
+
+    // Deze methode wordt aangeroepen bij het starten van het spel
+    private void Start()
+    {
+        if (instance == null)
         {
-            // Stel het pad en het doelwit in voor de vijand
-            enemyScript.path = path;
-            enemyScript.target = RequestTarget(path, 1); // Start altijd bij index 1
+            instance = this;
         }
         else
         {
-            Debug.LogError("Enemy-component niet gevonden op gespawnde vijand!");
+            Destroy(gameObject);
+            return;
         }
+        gameManager = GameManager.Instance;
     }
 
-    // Deze methode wordt aangeroepen bij het starten van het spel
-    void Start()
-    {
-        // Start een golf met een bepaald nummer, bijvoorbeeld:
-        StartWave(1);
-    }
+
     public void StartWave(int number)
     {
+        // Reset de teller
         ufoCounter = 0;
+
+        // Start de wave op basis van het nummer
         switch (number)
         {
             case 1:
-                InvokeRepeating("StartWave1", 1f, 1.5f);
+                InvokeRepeating("StartWave1", 1f, 1f);
                 break;
-                // Voeg hier cases toe voor extra waves
+            case 2:
+                InvokeRepeating("StartWave2", 1f, 1f);
+                break;
+            case 3:
+                InvokeRepeating("StartWave3", 1f, 1.5f);
+                break;
+            case 4:
+                InvokeRepeating("StartWave4", 1f, 2f);
+                break;
+            case 5:
+                InvokeRepeating("StartWave5", 1f, 2.5f);
+                break;
         }
     }
-
-    public void StartWave1()
+    private void StartWave1()
     {
+        SpawnEnemy(0, Enums.Path.Path1); 
         ufoCounter++;
-        if (ufoCounter % 6 <= 1) return;
-        if (ufoCounter < 30)
+
+        // Stop de wave na een bepaald aantal UFO's
+        if (ufoCounter >= 5) 
         {
-            SpawnEnemy(0, Enums.Path.Path1);
+            CancelInvoke("StartWave1");
+        }
+    }
+    private void StartWave2()
+    {
+        if (ufoCounter < 25)
+        {
+            SpawnEnemy(0, Enums.Path.Path2); 
+            ufoCounter++;
+        }
+        else if (ufoCounter < 35)
+        {
+            SpawnEnemy(1, Enums.Path.Path2); 
+            ufoCounter++;
+        }
+        else if (ufoCounter < 55)
+        {
+            SpawnEnemy(Random.Range(0, Enemies.Count), Enums.Path.Path2); // Random mix van vijanden
+            ufoCounter++;
         }
         else
         {
-            SpawnEnemy(1, Enums.Path.Path1); // Laatste vijand is niveau 2
-        }
-        if (ufoCounter > 30)
-        {
-            CancelInvoke("StartWave1"); // Beëindig deze wave
-            GameManager.Instance.EndWave(); // Laat GameManager weten dat de golf voorbij is
+            CancelInvoke("StartWave2");
         }
     }
-    // Deze methode wordt elke seconde aangeroepen om een vijand te spawnen voor testdoeleinden
-    private void SpawnTester()
+    // Functie om wave 3 te starten
+    private void StartWave3()
     {
-        // Voorbeeld: spawn een vijand van type 0 op pad 1
-        SpawnEnemy(0, Enums.Path.Path1);
+        if (ufoCounter < 45)
+        {
+            SpawnEnemy(1, Enums.Path.Path1); 
+            ufoCounter++;
+        }
+        else if (ufoCounter < 65)
+        {
+            SpawnEnemy(2, Enums.Path.Path1); // Veronderstel dat type 2 een nog moeilijkere vijand is, je kunt dit aanpassen aan je eigen logica
+            ufoCounter++;
+        }
+        else if (ufoCounter < 85)
+        {
+            SpawnEnemy(Random.Range(0, Enemies.Count), Enums.Path.Path1); 
+        }
+        else
+        {
+            CancelInvoke("StartWave3");
+        }
+    }
+    private void StartWave4()
+    {
+        if (ufoCounter < 65)
+        {
+            SpawnEnemy(2, Enums.Path.Path2); 
+            ufoCounter++;
+        }
+        else if (ufoCounter < 85)
+        {
+            SpawnEnemy(3, Enums.Path.Path2); 
+            ufoCounter++;
+        }
+        else if (ufoCounter < 115)
+        {
+            SpawnEnemy(Random.Range(0, Enemies.Count), Enums.Path.Path2); 
+            ufoCounter++;
+        }
+        else
+        {
+            CancelInvoke("StartWave4");
+        }
+    }
+
+    private void StartWave5()
+    {
+        if (ufoCounter < 95)
+        {
+            SpawnEnemy(3, Enums.Path.Path1); 
+            ufoCounter++;
+        }
+        else if (ufoCounter < 125)
+        {
+            SpawnEnemy(4, Enums.Path.Path1); 
+            ufoCounter++;
+        }
+        else if (ufoCounter < 155)
+        {
+            SpawnEnemy(Random.Range(0, Enemies.Count), Enums.Path.Path1); 
+            ufoCounter++;
+        }
+        else
+        {
+            CancelInvoke("StartWave5");
+        }
     }
 }

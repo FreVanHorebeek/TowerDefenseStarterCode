@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static Enums;
 
 public class GameManager : MonoBehaviour
@@ -69,7 +70,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-        public void AddInGameEnemy()
+    public void AddInGameEnemy()
     {
         enemyInGameCounter++;
     }
@@ -93,21 +94,55 @@ public class GameManager : MonoBehaviour
 
     public void StartWave()
     {
-        if (!waveActive)
-        {
-            waveActive = true;
-            currentWave++;
-            enemyInGameCounter = 0; // Reset de teller aan het begin van de wave
-            UpdateLabels();
-            EnemySpawner.instance.StartWave(currentWave);
-        }
+        // Verhoog de waarde van currentWave
+        currentWave++;
+
+        // Roep de StartWave-functie van de EnemySpawner aan om de golf te starten
+        enemySpawner.StartWave(currentWave);
+
+        // Verander het label voor de huidige golf in topMenu
+        ChangeWaveLabel(currentWave);
+
+      
+        waveActive = true;
+
+        enemyInGameCounter = 0;
+        
     }
 
     public void EndWave()
     {
         waveActive = false;
+
+
+        // Als de health van de gate onder 0 is
+        if (health <= 0)
+        {
+            EndGame();
+            return;
+        }
+
+        // Controleer of alle vijanden zijn verslagen
+        if (enemyInGameCounter <= 0)
+        {
+            // Controleer of de huidige wave gelijk is aan de laatste wave
+            if (currentWave == MaxWave)
+            {
+                EndGame();
+            }
+            else
+            {
+                topMenu.EnableWaveButton();
+            }
+        }
+    }
+    private void ChangeWaveLabel(int waveNumber)
+    {
+        // Voeg hier code toe om het label van de golf te veranderen, bijvoorbeeld:
+        topMenu.SetWaveLabel("Wave " + waveNumber);
     }
 
+    
     private void UpdateLabels()
     {
         topMenu.SetCreditsLabel("Credits: " + credits);
@@ -118,22 +153,61 @@ public class GameManager : MonoBehaviour
 
     public void AttackGate()
     {
-        health -= 1;
-        topMenu.SetGateHealthLabel("Health: " + health);
-    }
+        // Verminder de gezondheid van de poort met 1
+        health--;
 
+        // Update the label in the TopMenu
+        if (topMenu != null)
+        {
+            topMenu.SetGateHealthLabel("Health: " + health.ToString());
+        }
+        else
+        {
+            Debug.LogError("TopMenu script niet gevonden in de scene.");
+        }
+
+        // Controleer of de gezondheid van de poort onder 0 is
+        if (health <= 0)
+        {
+            EndGame();
+        }
+    }
+    private void EndGame()
+    {
+        SceneManager.LoadScene("IntroScene");
+    }
     public void AddCredits(int amount)
     {
+        // Voeg het bedrag toe aan de huidige credits
         credits += amount;
-        topMenu.SetCreditsLabel("Credits: " + credits);
-        // Hier toekomstige logica voor towerMenu evaluatie
-    }
 
+        // Update het label in het TopMenu
+        topMenu.SetCreditsLabel("Credits: " + credits.ToString());
+
+        
+        EvaluateTowerMenu();
+    }
+    private void EvaluateTowerMenu()
+    {
+        // Voeg hier code toe om het torenmenu te evalueren op basis van credits
+        // bijvoorbeeld: schakel knoppen in/uit op basis van beschikbare credits
+    }
     public void RemoveCredits(int amount)
     {
+        // Trek het bedrag af van de huidige credits
         credits -= amount;
-        topMenu.SetCreditsLabel("Credits: " + credits);
-        // Hier toekomstige logica voor towerMenu evaluatie
+
+        // Zorg ervoor dat de credits niet onder nul kunnen gaan
+        if (credits < 0)
+        {
+            credits = 0;
+        }
+
+        // Update het label in het TopMenu
+        topMenu.SetCreditsLabel("Credits: " + credits.ToString());
+
+        
+        EvaluateTowerMenu();
     }
 
     public int GetCredits()
@@ -258,16 +332,8 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        // Bereken de verkoopwaarde van de toren
-        int sellValue = GetCost(selectedSite.TowerType, selectedSite.Level, selling: true);
-
-        // Voeg de verkoopwaarde toe aan de spelercredits
-        AddCredits(sellValue);
-
-        // Roep de RemoveTower methode aan van de selectedSite
         selectedSite.ClearTower();
 
-        // Verberg het towerMenu als dat nodig is
         if (towerMenu != null)
         {
             towerMenu.SetSite(null);
