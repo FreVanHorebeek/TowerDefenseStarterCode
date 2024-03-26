@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Enums;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,13 +14,13 @@ public class GameManager : MonoBehaviour
     private TopMenu topMenu;
 
     private ConstructionSite selectedSite;
-    public List<GameObject> Archers;
-    public List<GameObject> Swords;
-    public List<GameObject> Wizards;
+    public List<GameObject> Archers = new List<GameObject>();
+    public List<GameObject> Swords = new List<GameObject>();
+    public List<GameObject> Wizards = new List<GameObject>();
 
-    private int credits = 200, 
-    health = 10, 
-    currentWave = 0;
+    private int credits = 200;
+    private int health = 10;
+    private int currentWave = 0;
     private bool waveActive = false;
 
     private int enemyInGameCounter = 0;
@@ -46,9 +47,18 @@ public class GameManager : MonoBehaviour
 
     void StartGame()
     {
+
+        // Stel de waarden in voor credits, health en currentWave
         credits = 200;
         health = 10;
         currentWave = 0;
+
+        // Gebruik de functies van TopMenu om de tekst voor elk label in te stellen
+        topMenu.SetCreditsLabel("Credits: " + credits.ToString());
+        topMenu.SetGateHealthLabel("Health: " + health.ToString());
+        topMenu.SetWaveLabel("Wave: " + currentWave.ToString());
+        // Zet waveActive op false bij het starten van de game
+
         waveActive = false; // Zorg ervoor dat waveActive false is bij het starten van het spel
         UpdateLabels();
     }
@@ -125,21 +135,28 @@ public class GameManager : MonoBehaviour
         return credits;
     }
 
-    public int GetCost(Enums.TowerType type, Enums.SiteLevel level, bool selling = false)
+    public int GetCost(TowerType type, SiteLevel level, bool selling = false)
     {
-        // Basis kosten bepalen op basis van type en level, dit is een voorbeeld
-        int cost = 100; // Stel dit in op de daadwerkelijke kosten
+        int cost = 0;
 
-        // Pas de kosten aan op basis van of het een verkoop is
-        if (selling)
+        // Bepaal de kosten op basis van het type toren en het
+        switch (type)
         {
-            // Verkoopwaarde is bijvoorbeeld de helft van de aankoopprijs
-            return cost / 2;
+            case TowerType.Archer:
+                cost = (level == SiteLevel.Level1) ? 49 : (level == SiteLevel.Level2) ? 74 : (level == SiteLevel.Level3 && !selling) ? 149 : 0;
+                break;
+            case TowerType.Sword:
+                cost = (level == SiteLevel.Level1) ? 74 : (level == SiteLevel.Level2) ? 99 : (level == SiteLevel.Level3 && !selling) ? 199 : 0;
+                break;
+            case TowerType.Wizard:
+                cost = (level == SiteLevel.Level1) ? 99 : (level == SiteLevel.Level2) ? 124 : (level == SiteLevel.Level3 && !selling) ? 249 : 0;
+                break;
+            default:
+                Debug.LogError("Unknown tower type: " + type);
+                break;
         }
-        else
-        {
-            return cost;
-        }
+
+        return cost;
     }
 
     public void SelectSite(ConstructionSite site)
@@ -225,6 +242,7 @@ public class GameManager : MonoBehaviour
             towerMenu.SetSite(null); // Verberg het towerMenu
         }
     }
+
 
     public void DestroyTower()
     {

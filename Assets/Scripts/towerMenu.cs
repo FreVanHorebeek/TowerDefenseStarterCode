@@ -136,17 +136,17 @@ public class TowerMenu : MonoBehaviour
 
     private void OnArcherButtonClicked()
     {
-        GameManager.Instance.Build(Enums.TowerType.Archer, SiteLevel.Unbuilt);
+        GameManager.Instance.Build(Enums.TowerType.Archer, SiteLevel.Level1);
     }
 
     private void OnSwordButtonClicked()
     {
-        GameManager.Instance.Build(Enums.TowerType.Sword, SiteLevel.Unbuilt);
+        GameManager.Instance.Build(Enums.TowerType.Sword, SiteLevel.Level1);
     }
 
     private void OnWizardButtonClicked()
     {
-        GameManager.Instance.Build(Enums.TowerType.Wizard, SiteLevel.Unbuilt);
+        GameManager.Instance.Build(Enums.TowerType.Wizard, SiteLevel.Level1);
     }
 
     private void OnUpdateButtonClicked()

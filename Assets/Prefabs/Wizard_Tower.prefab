@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4844199700444972982}
   - component: {fileID: 3016205224376919641}
+  - component: {fileID: 7957600259484312872}
   m_Layer: 0
   m_Name: Wizard_Tower
   m_TagString: Untagged
@@ -70,8 +71,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -284844883
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 0528d4dc9102ed149af7e44771f55305, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -84,3 +85,21 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &7957600259484312872
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2672421521588469263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68605a97182caae44b3a3dc2ffdf7340, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  attackRange: 2
+  attackRate: 1
+  attackDamage: 1
+  attackSize: 1
+  bulletPrefab: {fileID: 8181679178445612915, guid: c791a1975c00f5f46a58baf4c2f1a1d7, type: 3}
+  type: 2

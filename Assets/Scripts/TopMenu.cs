@@ -6,7 +6,7 @@ public class TopMenu : MonoBehaviour
     private Label WaveLabel;
     private Label CreditsLabel;
     private Label GHealthLabel;
-    private Button StartButton;
+    private Button PlayButton;
 
     private VisualElement root;
 
@@ -17,11 +17,11 @@ public class TopMenu : MonoBehaviour
         WaveLabel = root.Q<Label>("Wave");
         CreditsLabel = root.Q<Label>("Credits");
         GHealthLabel = root.Q<Label>("Gate-Health");
-        StartButton = root.Q<Button>("Play-Button");
+        PlayButton = root.Q<Button>("Play-Button");
 
-        if (StartButton != null)
+        if (PlayButton != null)
         {
-            StartButton.clicked += OnPlayButtonClicked;
+            PlayButton.clicked += OnPlayButtonClicked;
         }
     }
 
@@ -52,26 +52,26 @@ public class TopMenu : MonoBehaviour
     private void OnPlayButtonClicked()
     {
         GameManager.Instance.StartWave();
-        if (StartButton != null)
+        if (PlayButton != null)
         {
-            StartButton.SetEnabled(false);
+            PlayButton.SetEnabled(false);
         }
     }
 
     public void EnableWaveButton()
     {
         // Zorgt ervoor dat de knop weer interactief is na het beëindigen van een wave
-        if (StartButton != null)
+        if (PlayButton != null)
         {
-            StartButton.SetEnabled(true);
+            PlayButton.SetEnabled(true);
         }
     }
 
     private void OnDestroy()
     {
-        if (StartButton != null)
-        {
-            StartButton.clicked -= OnPlayButtonClicked;
+        if (PlayButton != null)
+        {           
+            PlayButton.clicked -= OnPlayButtonClicked;
         }
     }
 }
